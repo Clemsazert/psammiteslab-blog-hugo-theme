@@ -40,6 +40,17 @@
 		{{ range .Site.Menus.main }}
 		<a href="{{ relLangURL .URL }}">{{ printf "menu.%s" .Name | i18n | default .Name }}</a>
 		{{ end }}
+    {{ if hugo.IsMultilingual }}
+      {{ $currentLang := .Lang }}
+      {{ $candidates := cond (gt (len .AllTranslations) 0) .AllTranslations .Site.Home.AllTranslations }}
+      {{ $others := where $candidates "Lang" "ne" $currentLang }}
+      {{ if gt (len $others) 0 }}
+        {{ $target := index $others 0 }}
+        <div>
+          <a href="{{ $target.RelPermalink }}">{{ upper $target.Lang }}</a>
+        </div>
+      {{ end }}
+    {{ end }}
 		{{ if eq .Site.Params.mode "toggle" -}}
 		<button id="dark-mode-toggle" class="nav-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" type="button">{{template "feathericon" (dict "UseCDN" .Site.Params.useCDN "Icon" "sun") }}</button>
 		<script src="{{ absURL "js/themetoggle.js" }}"></script>
